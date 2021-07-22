@@ -6,7 +6,8 @@ class User(models.Model):
     email = models.CharField(max_length=100)
     password = models.CharField(max_length=100)
     mobile = models.CharField(max_length=100)
-    other_info = models.CharField(max_length=1000)
+    address = models.CharField(max_length=100)
+    birth_date = models.DateField()
 
     class Meta:
         db_table="user_info"
