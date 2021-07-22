@@ -760,6 +760,5 @@ FodyWeavers.xsd
 ### VisualStudio Patch ###
 # Additional files built by Visual Studio
 
+my_setting.py
 # End of https://www.toptal.com/developers/gitignore/api/python,pycharm,vim,visualstudio,visualstudiocode,macos,linux,windows,zsh
-
-my_settings.py
