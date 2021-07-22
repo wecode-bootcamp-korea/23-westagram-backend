@@ -6,7 +6,7 @@ class User(models.Model):
     name = models.CharField(max_length=20)
     email = models.EmailField(max_length=50, unique=True)
     password = models.CharField(max_length=50)
-    note = models.TextField(max_lenth=100, null=True)
+    note = models.TextField(max_length=100, null=True)
     phone = models.CharField(
         max_length=16,
         blank=True,
