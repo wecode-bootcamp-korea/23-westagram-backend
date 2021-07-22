@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models.deletion import CASCADE
-from django.db.models.fields import TextField, DateField, IntegerField
+from django.db.models.fields import TextField, IntegerField
 
 
 class User(models.Model):
