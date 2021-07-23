@@ -10,7 +10,7 @@ class User_View(View):
         try:
             data = json.loads(request.body)               
             if data['email'] == "" or data['password'] == "":
-                raise KeyError
+                return JsonResponse({'MESSAGE':'INVALID_VALUE'}, status = 401)
         
             if User.objects.filter(email = data['email']).exists():
                 return JsonResponse({'MESSAGE':'USE_OTHER_EMAIL'}, status = 400)
