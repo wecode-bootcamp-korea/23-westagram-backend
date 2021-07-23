@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
-from my_setting import DATABASES, SECRET_KEY
+from my_settings import DATABASES, SECRET_KEY
 
 import pymysql
 
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
+    'users',
     ]
 
 MIDDLEWARE = [
