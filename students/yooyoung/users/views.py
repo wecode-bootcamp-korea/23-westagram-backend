@@ -18,10 +18,10 @@ class SignUp(View):
             if (data["email"] == "") or (data["password"] == ""):
                 return JsonResponse({"message": "NO_INPUT"}, status=400)
 
-            if re.match(r"^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", data["email"]) == None:
+            if re.match(r"^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", data["email"]) is None:
                 return JsonResponse({"message": "INVALID_FORMAT"}, status=400)
 
-            if re.match(r"^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$", data["password"]) == None:
+            if re.match(r"^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$", data["password"]) is None:
                 return JsonResponse({"message": "INVALID_FORMAT"}, status=400)
 
             User.objects.create(
