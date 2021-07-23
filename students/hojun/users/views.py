@@ -20,11 +20,11 @@ class UserView(View):
             if password_validation.search(password) != None:
                 return JsonResponse({'MESSAGE' : 'INVALID_FORMAT'}, status = 400)
             elif len(password) < 8:
-                return JsonResponse({'MESSAGE' : 'INVALID_FORMAT'})
+                return JsonResponse({'MESSAGE' : 'INVALID_FORMAT'}, status = 400)
 
             email_validation = re.compile('[\w]+@[\w]+[.]+[\w]+')
             if email_validation.match(email) == None:
-                return JsonResponse({'MESSAGE' : 'INVALID_FORMAT'})
+                return JsonResponse({'MESSAGE' : 'INVALID_FORMAT'}, status = 400)
 
             if User.objects.filter(email=email).exists():
                 return JsonResponse({'MESSAGE' : "ALREADY_EXISTS"}, status = 400)
