@@ -13,6 +13,9 @@ class UserView(View):
     
     email_type = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
     password_type = re.compile('^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$')
+    
+    if User.objects.filter(data["email"]).exists:
+      return JsonResponse({"message":"EMAIL_ALREADY_EXISTS"}, status=400)  
 
     if (not email_type.match(data["email"])) or (not password_type.match(data["password"])):
       return JsonResponse({"message":"INPUT_FORMAT_ERROR"}, status=401)
