@@ -17,11 +17,8 @@ class UserView(View):
             age          = data['age']
 
             password_validation = re.compile('\s')
-            if (password_validation.search(password) is not None) or (len(password) < 8):
-                return JsonResponse({'MESSAGE' : 'INVALID_FORMAT'}, status = 400)
-
             email_validation = re.compile('[\w]+@[\w]+[.]+[\w]+')
-            if email_validation.match(email) is None:
+            if (password_validation.search(password) is not None) or (len(password) < 8) or email_validation.match(email) is None:
                 return JsonResponse({'MESSAGE' : 'INVALID_FORMAT'}, status = 400)
 
             if User.objects.filter(email=email).exists():
