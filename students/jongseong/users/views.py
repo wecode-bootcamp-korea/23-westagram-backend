@@ -13,7 +13,7 @@ class UsersView(View):
             password_validation = re.compile("^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$")
 
             if data['email']=="" or data['password']=="":
-                return JsonResponse({"Message":"KEY_ERROR"}, status=400)
+                return JsonResponse({"Message":"NO_INPUT_DATA"}, status=400)
             
             if (email_validation.match(data['email']) is None) or (password_validation.match(data['password']) is None):
                 return JsonResponse({"MESSAGE":"INVALID_FORMAT"}, status=400)
@@ -21,7 +21,7 @@ class UsersView(View):
             if User.objects.filter(email = data['email']).exists():
                 return JsonResponse({"MESSAGE":"EMAIL_ALREADY_EXIST"}, status=400)
 
-            user = User.objects.create(
+            User.objects.create(
                 name            = data['name'],
                 email           = data['email'],
                 password        = data['password'],
