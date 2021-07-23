@@ -8,8 +8,8 @@ from users.models import User
 
 class UserView(View):
     def post(self, request):
-        data = json.loads(request.body)
-        email = data.get('email') # data.get('email')
+        data     = json.loads(request.body)
+        email    = data.get('email') # data.get('email')
         password = data.get('password')
 
         # email 혹은 password를 request로 전달받지 못했을 때  
@@ -35,11 +35,11 @@ class UserView(View):
             return JsonResponse({'MESSAGE' : "이미 존재하는 이메일입니다."}, status = 400)
 
         user = User.objects.create(
-            name = data['name'],
-            email = data['email'],
-            password = data['password'],
+            name         = data['name'],
+            email        = data['email'],
+            password     = data['password'],
             phone_number = data['phone_number'],
-            age = data['age']
+            age          = data['age']
         )
 
         return JsonResponse({'MESSAGE' : "SUCCESS"}, status=201)
