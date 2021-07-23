@@ -3,10 +3,10 @@ from phonenumber_field.modelfields  import PhoneNumberField
 
 class User(models.Model):
     name         = models.CharField(max_length=20)
-    email        = models.CharField(max_length=50, unique=True)
-    password     = models.CharField(max_length=45)
+    email        = models.CharField(max_length=200, unique=True)
+    password     = models.CharField(max_length=50)
     phone_number = PhoneNumberField(unique=True)
-    age          = models.PositiveIntegerField(max_length=3)
+    age          = models.PositiveIntegerField()
 
     class Meta:
         db_table = "users"
