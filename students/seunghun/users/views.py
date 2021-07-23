@@ -1,6 +1,5 @@
 import json, re
 
-from django.shortcuts import render
 from django.views import View
 from django.http import JsonResponse
 
@@ -10,7 +9,8 @@ class User_View(View):
     def post(self, request):
         try:
             data = json.loads(request.body)               
-            data['email'] == "" or data['password'] == ""
+            if data['email'] == "" or data['password'] == "":
+                raise KeyError
         
             if User.objects.filter(email = data['email']).exists():
                 return JsonResponse({'MESSAGE':'USE_OTHER_EMAIL'}, status = 400)
