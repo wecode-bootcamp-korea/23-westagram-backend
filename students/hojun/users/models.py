@@ -7,7 +7,7 @@ class User(models.Model):
     email         = models.CharField(max_length=100)
     password      = models.CharField(max_length=100)
     phone_number  = models.CharField(max_length=45)
-    age           = models.PositiveIntegerField(max_length=45)
+    age           = models.PositiveIntegerField()
 
     class Meta:
         db_table = "users"
