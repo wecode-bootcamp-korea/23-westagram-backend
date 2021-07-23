@@ -9,9 +9,12 @@ from users.models import User
 class UserView(View):
     def post(self, request):
         try:
-            data     = json.loads(request.body)
-            email    = data['email']
-            password = data['password']
+            data         = json.loads(request.body)
+            name         = data['name']
+            email        = data['email']
+            password     = data['password']
+            phone_number = data['phone_number']
+            age          = data['age']
 
             password_validation = re.compile('\s')
             if password_validation.search(password) != None:
@@ -26,12 +29,12 @@ class UserView(View):
             if User.objects.filter(email=email).exists():
                 return JsonResponse({'MESSAGE' : "ALREADY_EXISTS"}, status = 400)
 
-            user = User.objects.create(
-                name         = data['name'],
-                email        = data['email'],
-                password     = data['password'],
-                phone_number = data['phone_number'],
-                age          = data['age']
+            User.objects.create(
+                name         = name,
+                email        = email,
+                password     = password,
+                phone_number = phone_number,
+                age          = age
             )
             return JsonResponse({'MESSAGE' : "SUCCESS"}, status=201)    
 
