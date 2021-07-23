@@ -8,7 +8,7 @@ from users.models import User
 
 class LoginView(View):
     def post(sef, request):
-        data     = json.loads(request.body)
+        data = json.loads(request.body)
  
         try:
             if (data["email"] or data["password"] == ""):
