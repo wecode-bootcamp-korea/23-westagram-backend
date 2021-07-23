@@ -20,4 +20,4 @@ class User(models.Model):
     )
     
     class Meta:
-        db_table = 'Users'
+        db_table = 'users'
