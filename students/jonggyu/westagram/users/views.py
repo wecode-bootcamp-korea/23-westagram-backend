@@ -11,7 +11,7 @@ class UserView(View):
             data = json.loads(request.body)
 
             if (data["password"] == "") or (data["email"] == ""):
-                return JsonResponse({"message": "KEY_ERROR"}, status=400)
+                return JsonResponse({"message": "EMPTY_PASSWORD_OR_EMAIL"}, status=400)
 
             if re.match(r"^[a-zA-Z0-9+._-]+@[a-zA-Z0-9]+\.[a-zA-Z0-9-.]{2,4}$", data["email"]) is None:
                 return JsonResponse({"message": "INVALID_FORMAT"}, status=400)
