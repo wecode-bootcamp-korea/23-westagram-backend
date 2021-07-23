@@ -1,3 +1,46 @@
-from django.shortcuts import render
+import json, re
 
-# Create your views here.
+from django.http  import JsonResponse
+from django.views import View
+
+from users.models import User
+
+def email_validation(email):
+    p = re.compile('^[a-zA-Z0-9-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-_]+\.*[a-zA-Z0-9-_]+$')
+    return not p.match(email)
+
+def password_validation(password):
+    p = re.compile('^[A-Za-z\d$@$()^!%*#?&].{8,}$')
+    return not p.match(password)
+
+class SignUpView(View):
+    def post(self, request):
+        data = json.loads(request.body)
+
+        if not ('email' or 'password') in data:
+            return JsonResponse({"MESSAGE": "KEY_ERROR"}, status=400)
+        
+        if email_validation(data['email']):
+            return JsonResponse({"MESSAGE":"INVALID_EMAIL"}, status=400)
+        
+        if password_validation(data['password']):
+            return JsonResponse({"MESSAGE":"INVALID_PASSWORD"}, status=400)
+        
+        if User.objects.filter(email=data['email']).exists():
+            return JsonResponse({"MESSAGE":"ALREADY_EMAIL_EXSISTS"}, status=400)
+
+        if User.objects.filter(phone_number=data['phone_number']).exists():
+            return JsonResponse({"MESSAGE":"ALREADY_PHONE_NUMBER_EXSISTS"}, status=400)
+        
+        else:
+            signup_user = User.objects.create(
+                name          = data['name'],
+                email         = data['email'],
+                password      = data['password'],
+                phone_number  = data['phone_number'],
+                age           = data['age'],
+                gender        = data['gender'],
+                birth_date    = data['birth_date']
+            )
+            return JsonResponse({"MESSAGE": "SUCCESS"}, status=201)
+        
