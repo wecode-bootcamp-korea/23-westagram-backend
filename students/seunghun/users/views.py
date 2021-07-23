@@ -9,8 +9,13 @@ class User_CreateView(View):
     def post(self, request):
         data = json.loads(request.body)
 
-        if data['email'] == None or data['password'] == None:
+        try:
+            data['email'] == "" or data['password'] == ""
+        except KeyError:
             return JsonResponse({'MESSAGE':'KEY_ERROR'}, status = 400)
+
+        '''if data['email'] == None or data['password'] == None:
+            return JsonResponse({'MESSAGE':'KEY_ERROR'}, status = 400)'''
 
         if User.objects.filter(email = data['email']).exists():
             return JsonResponse({'MESSAGE':'USE_OTHER_EMAIL'}, status = 400)
