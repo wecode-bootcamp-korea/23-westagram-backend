@@ -22,11 +22,11 @@ class UsersView(View):
                 return JsonResponse({"MESSAGE":"EMAIL_ALREADY_EXIST"}, status=400)
 
             user = User.objects.create(
-                name         = data['name'],
-                email        = data['email'],
-                password     = data['password'],
-                phone_number = data['phone_number'],
-                age          = data['age']
+                name            = data['name'],
+                email           = data['email'],
+                password        = data['password'],
+                phone_number    = data['phone_number'],
+                age             = data['age']
             )
             return JsonResponse({"MESSAGE":"SUCCESS"}, status=201)
         except KeyError:
