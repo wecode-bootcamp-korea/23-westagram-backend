@@ -15,7 +15,7 @@ class SignupView(View):
       
       if User.objects.filter(email=data["email"]).exists():
         return JsonResponse({"message":"EMAIL_ALREADY_EXISTS"}, status=400)  
-      
+
       email_type = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
       password_type = re.compile('^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$')
 
