@@ -8,19 +8,22 @@ from users.models import User
 
 # Create your views here.
 
-class UserView(View):
+class SignupView(View):
   def post(self, request):
     try: 
       data = json.loads(request.body)
       
-      email_type = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
-      password_type = re.compile('^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$')
-      
       if User.objects.filter(email=data["email"]).exists():
         return JsonResponse({"message":"EMAIL_ALREADY_EXISTS"}, status=400)  
+      
+      email_type = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
+      password_type = re.compile('^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$')
 
-      if (not email_type.match(data["email"])) or (not password_type.match(data["password"])):
-        return JsonResponse({"message":"INPUT_FORMAT_ERROR"}, status=401)
+      if (not email_type.match(data["email"])):
+        return JsonResponse({"message":"EMAIL_FORMAT_ERROR"}, status=401)
+
+      if (not password_type.match(data["password"])):
+        return JsonResponse({"message":"PASSWORD_FORMAT_ERROR"}, status=401)
       
       User.objects.create(
         name       = data["name"],
@@ -34,4 +37,6 @@ class UserView(View):
       
     except:
       return JsonResponse({"message":"KEY_ERROR"}, status=400)
+
+     
 
