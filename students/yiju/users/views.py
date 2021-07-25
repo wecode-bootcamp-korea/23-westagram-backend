@@ -42,7 +42,7 @@ class UserView(View):
 		
 
 class LoginView(View):
-	def get(self,request):
+	def post(self,request):
 		try:
 			data     = json.loads(request.body)
 			email    = data['email']
