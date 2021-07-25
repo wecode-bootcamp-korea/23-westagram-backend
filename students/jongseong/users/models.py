@@ -8,10 +8,10 @@ class User(models.Model):
     password     = models.CharField(max_length=200)
     phone_number = models.CharField(max_length=45)
     age          = models.PositiveIntegerField()
+    nickname     = models.CharField(max_length=45, default="", unique=True)
 
     class Meta:
         db_table = 'users'
 
     def __str__(self):
         return self.name
-
