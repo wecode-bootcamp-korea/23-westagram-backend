@@ -1,4 +1,4 @@
-import json
+import json, bcrypt
 
 from django.http       import JsonResponse
 from django.views      import View
@@ -10,6 +10,8 @@ class SignupView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
+            password     = data['password']
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'),bcrypt.gensalt()).decode('utf-8')
 
             if not email_validation(data['email']):
                 return JsonResponse({'message':'INVALID_EMAIL_FORMAT'}, status=400)
@@ -19,11 +21,12 @@ class SignupView(View):
 
             if User.objects.filter(email=data['email']).exists():
                 return JsonResponse({'massage':'INVALID_EMAIL'}, status=400)
+            
 
             User.objects.create(
                 name         = data['name'],
                 email        = data['email'],
-                password     = data['password'],
+                password     = hashed_password,
                 phone_number = data['phone_number'],
                 birthday     = data['birthday'],
             )
@@ -39,10 +42,9 @@ class LoginView(View):
             if not User.objects.filter(email=data['email']).exists():
                 return JsonResponse({'message':'INVALID_USER'}, status=401)
 
-            if User.objects.get(email=data['email']).password != data['password']:
+            if not bcrypt.checkpw(data['password'].encode('utf-8'), User.objects.get(email = data['email']).password.encode('utf-8')):
                 return JsonResponse({'message':'INVALID_USER'}, status=401)
 
             return JsonResponse({'message':'SUCCESS'}, status=200)
         except KeyError:
             return JsonResponse({'message':'KEY_ERROR'}, status=400)
-
