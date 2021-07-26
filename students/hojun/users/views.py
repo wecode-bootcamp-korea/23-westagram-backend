@@ -9,13 +9,13 @@ from users.models import User
 class UserView(View):
     def post(self, request):
         try:
-            data            = json.loads(request.body)
-            name            = data['name']
-            email           = data['email']
-            password        = data['password']
-            hashed_password = bcrypt.hashpw( password.encode('utf-8'), bcrypt.gensalt())
-            phone_number    = data['phone_number']
-            age             = data['age']
+            data         = json.loads(request.body)
+            name         = data['name']
+            email        = data['email']
+            password     = data['password']
+            hashed_password = bcrypt.hashpw( password.encode('utf-8'), bcrypt.gensalt() )
+            phone_number = data['phone_number']
+            age          = data['age']
 
             password_validation = re.compile('\s')
             email_validation = re.compile('[\w]+@[\w]+[.]+[\w]+')
@@ -28,7 +28,7 @@ class UserView(View):
             User.objects.create(
                 name         = name,
                 email        = email,
-                password     = hashed_password,
+                password     = hashed_password.decode('utf-8'),
                 phone_number = phone_number,
                 age          = age
             )
@@ -49,9 +49,9 @@ class LogInView(View):
             if not User.objects.filter(email=email).exists():
                 return JsonResponse({"MESSAGE" : "INVALID_USER"}, status=401)
             
-            if not bcrypt.checkpw( password.encode('utf-8'), hashed_password.decode('utf-8')):
+            if not bcrypt.checkpw( password.encode('utf-8'), hashed_password.encode('utf-8') ):
                 return JsonResponse({"MESSAGE" : "INVALID_USER"}, status=401)
-
+                
             return JsonResponse({"MESSAGE" : "SUCCESS"}, status=200)
 
 
