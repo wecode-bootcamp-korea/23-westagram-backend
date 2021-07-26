@@ -8,14 +8,14 @@ from users.models import User
 
 class UserView(View):
     def post(self, request):
-        try:
-            data         = json.loads(request.body)
-            name         = data['name']
-            email        = data['email']
-            password     = data['password']
+        try: 
+            data            = json.loads(request.body)
+            name            = data['name']
+            email           = data['email']
+            password        = data['password']
             hashed_password = bcrypt.hashpw( password.encode('utf-8'), bcrypt.gensalt() )
-            phone_number = data['phone_number']
-            age          = data['age']
+            phone_number    = data['phone_number']
+            age             = data['age']
 
             password_validation = re.compile('\s')
             email_validation = re.compile('[\w]+@[\w]+[.]+[\w]+')
@@ -44,12 +44,11 @@ class LogInView(View):
             data = json.loads(request.body)
             email = data['email']
             password = data['password']
-            hashed_password = User.objects.get(email=email).password
-
+            
             if not User.objects.filter(email=email).exists():
                 return JsonResponse({"MESSAGE" : "INVALID_USER"}, status=401)
-            
-            if not bcrypt.checkpw( password.encode('utf-8'), hashed_password.encode('utf-8') ):
+
+            if not bcrypt.checkpw( password.encode('utf-8'), User.objects.get(email=email).password.encode('utf-8') ):
                 return JsonResponse({"MESSAGE" : "INVALID_USER"}, status=401)
                 
             return JsonResponse({"MESSAGE" : "SUCCESS"}, status=200)
