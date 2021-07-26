@@ -21,7 +21,7 @@ class UsersView(View):
             if User.objects.filter(email=data['email']).exists():
                 return JsonResponse({'massage':'INVALID_EMAIL'}, status=400)
 
-            user = User.objects.create(
+            User.objects.create(
                 name         = data['name'],
                 email        = data['email'],
                 password     = data['password'],
