@@ -4,12 +4,13 @@ from django.views import View
 from django.http import JsonResponse
 
 from .models import User
+from westagram.settings import SECRET_KEY
 
 class SignUp(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
-            hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
+            hashed_password = bcrypt.hashpw(data['password'].encode('UTF-8'), bcrypt.gensalt())
 
             if User.objects.filter(email=data['email']).exists():
                 return JsonResponse({"message": "EMAIL_ALREADY_EXIST"}, status=400)
@@ -26,7 +27,7 @@ class SignUp(View):
             User.objects.create(
                 name         =   data['name'],
                 email        =   data['email'],
-                password     =   hashed_password.decode('utf-8'),
+                password     =   hashed_password.decode('UTF-8'),
                 phone_number =   data['phone'],
                 age          =   data['age']
             )
@@ -41,23 +42,18 @@ class SignIn(View):
         try:
             data = json.loads(request.body)
 
-            if not User.objects.filter(email=data['email']).exists():
-                return JsonResponse({"message": "INVALID_USER"}, status=401)
-
-            user = User.objects.get(email=data['email'])
-
-            if  bcrypt.checkpw(data['password'].encode("UTF-8"), user.password.encode('utf-8')):
-                token = jwt.encode({'user_id': user.id}, SECRET_KEY, algorithm='HS256')
-                return JsonResponse({'token': token }, status = 200)
-
             if (data['email'] == '') or (data['password'] == ''):
                 return JsonResponse({"message": "KEY_ERROR"}, status=400)
 
-            if data['password'] != User.objects.get(email=data['email']).password:
+            if not User.objects.filter(email=data['email']).exists():
+                return JsonResponse({"message": "INVALID_USER"}, status=401)
+
+            if not bcrypt.checkpw(data['password'].encode('UTF-8'), User.objects.get(email=data['email']).password.encode('UTF-8')):
                 return JsonResponse({"massage": "INVALID_USER"}, status=401)
 
-            if User.objects.filter(email=data['email']) and User.objects.filter(password=data['password']):
-                return JsonResponse({"message": "SUCCESS"}, status=200)
+            if  bcrypt.checkpw(data['password'].encode('UTF-8'), User.objects.get(email=data['email']).password.encode('UTF-8')):
+                token = jwt.encode({'user_id': User.objects.get(email = data["email"]).id}, SECRET_KEY, algorithm='HS256')
+                return JsonResponse({'token': token }, status = 200)
 
         except KeyError:
             return JsonResponse({"massage": "KEY_ERROR"}, status=400)
