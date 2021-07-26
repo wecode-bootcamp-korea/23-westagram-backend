@@ -32,11 +32,29 @@ class UserView(View):
 
               
             User.objects.create(
-                name      = data['name'],
-                phone_num = data['phone_num'],
-                password  = data['password'],
-                mail      = data['email']
+                name         = data['name'],
+                phone_number = data['phone_number'],
+                password     = data['password'],
+                email         = data['email']
             )
             return JsonResponse({'MESSAGE' : 'SUCCESS'}, status=201)  #성공하면 석세스 메세지 날림.
         except KeyError:
             return JsonResponse({'MESSAGE' : 'KEY ERROR'}, status=400)
+
+class SigninView(View):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+
+            if data['email']=="" or data['password']=="":
+                return JsonResponse({"MESSAGE":"NOT_FOUND"},status=404)
+            
+            if not User.objects.filter(email=data['email']).exists():
+                return JsonResponse({"MESSAGE" : "INVALID_USER"}, status=401)
+                
+            if User.objects.get(email=data['email']).password !=data['password']:
+                return JsonResponse({"MESSAGE" : "INVALID_USER"}, status=401)
+
+            return JsonResponse({"MESSAGE":"SUCCESS"}, status=200)
+        except KeyError:
+            return JsonResponse({"MESSAGE" : "KEY_ERROR"}, status=400)
