@@ -45,6 +45,8 @@ class SigninView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
+            password     = data['password']
+            email        = data['email']
 
             if data['email']=="" or data['password']=="":
                 return JsonResponse({"MESSAGE":"NOT_FOUND"},status=404)
@@ -54,9 +56,6 @@ class SigninView(View):
                 
             if User.objects.get(email=data['email']).password !=data['password']:
                 return JsonResponse({"MESSAGE" : "INVALID_USER"}, status=401)
-
-            
-            User.objects.get(email = data['email'])
 
         except KeyError:
             return JsonResponse({"MESSAGE" : "KEY_ERROR"}, status=400)
