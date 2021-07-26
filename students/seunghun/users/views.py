@@ -1,9 +1,10 @@
-import json, re, bcrypt
+import json, re, bcrypt, jwt
 
 from django.views import View
 from django.http import JsonResponse
 
 from users.models import User
+from westagram.settings import SECRET_KEY
 
 class User_View(View):
     def post(self, request):
@@ -51,7 +52,8 @@ class User_LoginView(View):
                     return JsonResponse({'MESSAGE':'INVALID_VALUE'}, status = 401)
 
                 if bcrypt.checkpw(data['password'].encode('utf-8'),User.objects.get(email=data['email']).password.encode('utf-8')):
-                    return JsonResponse({'MESSAGE':'SUCESS'}, status = 200)
+                    token = jwt.encode({'id':User.objects.get(email=data['email']).id}, SECRET_KEY, algorithm='HS256')
+                    return JsonResponse({'TOKEN':token}, status = 200)
 
                 return JsonResponse({'MESSAGE':'INVALID_USER'}, status = 401)
 
