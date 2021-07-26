@@ -1,4 +1,4 @@
-import json, re
+import json, re, bcrypt
 
 from django.views import View
 from django.http import JsonResponse
@@ -11,6 +11,8 @@ class UserView(View):
 	def post(self,request):
 		try:	
 			data = json.loads(request.body)  
+			bcrypt_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
 			if User.objects.filter(name=data['name']).exists() or User.objects.filter(email=data['email']).exists(): 			
 				return JsonResponse({'MESSAGE': 'DATA_OVERLAP'}, status = 400)		
 
@@ -20,7 +22,7 @@ class UserView(View):
 			User.objects.create(
 			name 		 = data['name'],
 			email	 	 = data['email'],
-			password	 = data['password'],
+			password	 = bcrypt_password,
 			phone_number = data['phone_number'], 
 			birthday 	 = data['birthday'],
 			)
