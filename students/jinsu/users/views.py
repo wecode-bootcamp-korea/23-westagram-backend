@@ -11,7 +11,6 @@ class UserView(View):
     def post(self,request):
         try:
             data = json.loads(request.body)
-            hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
 
             email_validation    = re.compile('\w+[@]\w+[.]\w+')
             password_validation = re.compile('\S{8,}')
@@ -24,6 +23,8 @@ class UserView(View):
 
             if not password_validation.match(data['password']):
                 return JsonResponse({"message":"PASSWORD_TOO_SHORT"}, status=400)
+
+            hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
 
             User.objects.create(
                 name         = data['name'],
@@ -42,12 +43,13 @@ class LoginView(View):
     def post(self,request):
         try:
             data = json.loads(request.body)
-            hashed_password = User.objects.get(email=data['email']).password.encode('utf-8')
             
             if not User.objects.filter(email=data['email']).exists():
                 return JsonResponse({"message":"INVALID_USER"}, status=401)
         
-            if not bcrypt.checkpw(data['password'].encode('utf-8'),hashed_password):
+            hashed_password = User.objects.get(email=data['email']).password.encode('utf-8')
+
+            if not bcrypt.checkpw(data['password'].encode('utf-8'), hashed_password):
                 return JsonResponse({"message":"INVALID_USER"}, status=401)
             
             return JsonResponse({"message":"SUCCESS"}, status=200)
