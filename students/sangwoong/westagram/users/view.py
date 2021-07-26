@@ -61,7 +61,6 @@ class SigninView(View):
                 password = data['password']
             )
 
-        
         except KeyError:
             return JsonResponse({"MESSAGE" : "KEY_ERROR"}, status=400)
-
+            return JsonResponse({"MESSAGE":"SUCCESS"}, status=200)
