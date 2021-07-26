@@ -25,12 +25,12 @@ class SignUpView(View):
                 return JsonResponse({"MESSAGE":"DATA_ALREADY_EXIST"}, status=400)
 
             User.objects.create(
-                name            = data['name'],
-                email           = data['email'],
-                password        = data['password'],
-                phone_number    = data['phone_number'],
-                age             = data['age'],
-                nickname        = data['nickname']
+                name         = data['name'],
+                email        = data['email'],
+                password     = data['password'],
+                phone_number = data['phone_number'],
+                age          = data['age'],
+                nickname     = data['nickname']
             )
             return JsonResponse({"MESSAGE":"SUCCESS"}, status=201)
         except KeyError:
@@ -39,7 +39,7 @@ class SignUpView(View):
 class SignInView(View):
     def post(self, request):
         try:
-            data                = json.loads(request.body)
+            data = json.loads(request.body)
 
             if data['email']=="" or data['password']=="":
                 return JsonResponse({"MESSAGE":"NO_INPUT_DATA"}, status=400)
