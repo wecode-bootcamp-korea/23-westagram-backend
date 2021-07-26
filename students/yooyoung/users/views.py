@@ -1,10 +1,10 @@
 import json, re, bcrypt, jwt
 
-from django.views import View
-from django.http import JsonResponse
+from django.views        import View
+from django.http         import JsonResponse
 
-from .models import User
-from westagram.settings import SECRET_KEY
+from .models             import User
+from westagram.settings  import SECRET_KEY
 
 class SignUp(View):
     def post(self, request):
