@@ -22,7 +22,7 @@ class UserView(View):
                 return JsonResponse({"message": 'INVALID_PHONE_NUMBER_FORMAT'}, status=400)
 
             if User.objects.filter(email=data['email']).exists():
-                return JsonResponse({"message": 'EXISTED_EMAIL')}, status=400)
+                return JsonResponse({"message": 'EXISTED_EMAIL'}, status=400)
 
             User.objects.create(
                 name         = data['name'],
@@ -37,3 +37,16 @@ class UserView(View):
         
         except Exception:
             return JsonResponse({"message": "INVALID_VALUE"}, status=400)
+
+class SigninView(View):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+
+            if not User.objects.filter(email=data['email'], password=data['password']).exists:
+                return JsonResponse({"message": "INVALID_USER"}, status=401)
+            
+            User(name=data['email'], password=data['password'])
+            return JsonResponse({"message": "SUCCESS"}, status=200)
+        except KeyError:
+            return JsonResponse({"message": "KEY_ERROR"}, status=400)
