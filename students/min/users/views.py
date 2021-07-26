@@ -1,4 +1,4 @@
-import json, re
+import json, re, bcrypt
 
 from django.http  import JsonResponse
 from django.views import View
@@ -10,7 +10,7 @@ def email_validation(email):
     return not p.match(email)
 
 def password_validation(password):
-    p = re.compile('^[A-Za-z\d$@$()^!%*#?&].{8,}$')
+    p = re.compile('^[A-Za-z\d$@$()^!%*#?&].{7,}$')
     return not p.match(password)
 
 class SignUpView(View):
@@ -32,11 +32,13 @@ class SignUpView(View):
 
             if User.objects.filter(phone_number=phone_number).exists(): 
                 return JsonResponse({"MESSAGE":"ALREADY_PHONE_NUMBER_EXSISTS"}, status=400)
-        
+
+            hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
             User.objects.create(
                 name         = data['name'],
                 email        = data['email'],
-                password     = data['password'],
+                password     = hashed_password,
                 phone_number = data['phone_number'],
                 age          = data['age'],
                 gender       = data['gender'],
@@ -55,8 +57,10 @@ class LoginView(View):
                 return JsonResponse({"MESSAGE":"INVALID_USER"}, status=401)
             
             user = User.objects.get(email=data['email'])
+
+            check_password = bcrypt.checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8'))
             
-            if user.password != data['password']:
+            if not check_password:
                 return JsonResponse({"MESSAGE":"INVALID_USER"}, status=401)
             
             return JsonResponse({"MESSAGE":"SUCCESS"}, status=200) 
