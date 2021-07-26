@@ -1,4 +1,5 @@
 from django.shortcuts import render
+import bcrypt
 
 
 import json
@@ -7,6 +8,7 @@ from django.http  import JsonResponse
 from django.views import View
 
 from .models	  import User
+
 
 
 class UserView(View):
@@ -30,11 +32,13 @@ class UserView(View):
             if User.objects.filter(name=data['name']).exists():
                 return JsonResponse({'MESSAGE' : 'DUPLICATED NAME'}, status=400)
 
+            hashed_password = bcrypt.hashpw (data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
               
             User.objects.create(
                 name         = data['name'],
                 phone_number = data['phone_number'],
-                password     = data['password'],
+                password     = hashed_password,
                 email         = data['email']
             )
             return JsonResponse({'MESSAGE' : 'SUCCESS'}, status=201)  #성공하면 석세스 메세지 날림.
@@ -45,6 +49,8 @@ class SigninView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
+            password=data['password']
+            user=User.objects.get(email=data['email'])
 
             if data['email']=="" or data['password']=="":
                 return JsonResponse({"MESSAGE":"NOT_FOUND"},status=404)
@@ -54,6 +60,9 @@ class SigninView(View):
                 
             if User.objects.get(email=data['email']).password !=data['password']:
                 return JsonResponse({"MESSAGE" : "INVALID_USER"}, status=401)
+            
+            if not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
+                return JsonResponse({'MESSAGE':'INVALID_USER'}, status=401)
 
             return JsonResponse({"MESSAGE":"SUCCESS"}, status=200)
         except KeyError:
