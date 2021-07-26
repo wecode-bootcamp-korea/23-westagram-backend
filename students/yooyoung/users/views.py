@@ -9,6 +9,7 @@ class SignUp(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
+            hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
 
             if User.objects.filter(email=data['email']).exists():
                 return JsonResponse({"message": "EMAIL_ALREADY_EXIST"}, status=400)
@@ -25,7 +26,7 @@ class SignUp(View):
             User.objects.create(
                 name         =   data['name'],
                 email        =   data['email'],
-                password     =   bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()),
+                password     =   hashed_password.decode('utf-8'),
                 phone_number =   data['phone'],
                 age          =   data['age']
             )
@@ -36,7 +37,6 @@ class SignUp(View):
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
 
 class SignIn(View):
-    #@login_decorator
     def post(self, request):
         try:
             data = json.loads(request.body)
@@ -46,7 +46,6 @@ class SignIn(View):
                 token = jwt.encode({'user_id': user.id}, SECRET_KEY, algorithm='HS256')
                 token = token.decode('utf-8')
                 return JsonResponse({'token': token }, status = 200)
-
 
             if (data['email'] == '') or (data['password'] == ''):
                 return JsonResponse({"message": "KEY_ERROR"}, status=400)
