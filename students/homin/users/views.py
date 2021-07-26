@@ -25,10 +25,10 @@ class UserView(View):
                 return JsonResponse({"message": 'EXISTED_EMAIL')}, status=400)
 
             User.objects.create(
-                name=data['name'],
-                email=data['email'],
-                password=data['password'],
-                phone_number=data['phone_number']
+                name         = data['name'],
+                email        = data['email'],
+                password     = data['password'],
+                phone_number = data['phone_number']
             )
             return JsonResponse({"message": "SUCCESS"}, status=201)
 
