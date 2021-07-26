@@ -1,4 +1,4 @@
-import json, re
+import json, re, bcrypt
 
 from django.http     import JsonResponse
 from django.views    import View
@@ -23,11 +23,13 @@ class SignUpView(View):
             
             if User.objects.filter(nickname = data['nickname']).exists():
                 return JsonResponse({"MESSAGE":"DATA_ALREADY_EXIST"}, status=400)
+            
+            hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
             User.objects.create(
                 name         = data['name'],
                 email        = data['email'],
-                password     = data['password'],
+                password     = hashed_password,
                 phone_number = data['phone_number'],
                 age          = data['age'],
                 nickname     = data['nickname']
@@ -40,6 +42,7 @@ class SignInView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
+            user = User.objects.get(email = data['email'])
 
             if data['email']=="" or data['password']=="":
                 return JsonResponse({"MESSAGE":"NO_INPUT_DATA"}, status=400)
@@ -47,7 +50,7 @@ class SignInView(View):
             if not User.objects.filter(email = data['email']).exists():
                 return JsonResponse({"MESSAGE":"INVALID_USER"}, status=401)
 
-            if User.objects.get(email = data['email']).password != data['password']:
+            if not bcrypt.checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')):
                 return JsonResponse({"MESSAGE":"INVALID_USER"}, status=401)
 
             return JsonResponse({"MESSAGE":"SUCCESS"}, status=200)
