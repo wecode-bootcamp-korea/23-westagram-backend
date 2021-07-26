@@ -33,12 +33,14 @@ class LoginView(View):
 	def post(self,requset):
 		try:
 			data = json.loads(requset.body)
-			if (data['email']) or (data['password']) == "" :
+
+			if data['email'] =="" or data['password'] == "" :
 				return JsonResponse ({'MESSAGE': 'WRONG_REQUEST'},status = 400)	
-			if data['email'] != User.objects.filter(email=data['email']):
-				return JsonResponse ({'MESSAGE':'INVALID_USER'}, status =401)		
-			if User.objects.filter(email=data['email']).exists() :
-				data['password'] != User.objects.filter(password=data['password'])
+
+			if not User.objects.filter(email=data['email']).exists():
+				return JsonResponse ({'MESSAGE':'INVALID_USER'}, status =401)
+
+			if data['password'] != User.objects.get(password=data['password']).password:
 				return JsonResponse ({'MESSAGE':'INVALID_USER'}, status =401)
 			return JsonResponse ({'MESSAGE':'SUCCESS'}, status = 200)
 
