@@ -34,8 +34,11 @@ class LoginView(View):
 		try:
 			data = json.loads(requset.body)
 			if (data['email']) or (data['password']) == "" :
-				return JsonResponse ({'MESSAGE': 'KEY_ERROR'},status = 400)	
-			if not (User.objects.filter(data['email']).exists()) or data['password'] == (User.objects.filter(data['password'])):
+				return JsonResponse ({'MESSAGE': 'WRONG_REQUEST'},status = 400)	
+			if data['email'] != User.objects.filter(email=data['email']):
+				return JsonResponse ({'MESSAGE':'INVALID_USER'}, status =401)		
+			if User.objects.filter(email=data['email']).exists() :
+				data['password'] != User.objects.filter(password=data['password'])
 				return JsonResponse ({'MESSAGE':'INVALID_USER'}, status =401)
 			return JsonResponse ({'MESSAGE':'SUCCESS'}, status = 200)
 
