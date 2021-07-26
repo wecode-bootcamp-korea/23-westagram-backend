@@ -1,4 +1,4 @@
-import json, re, bcrypt
+import json, re, jwt, bcrypt
 
 from django.views import View
 from django.http import JsonResponse
@@ -35,9 +35,17 @@ class LoginView(View):
 	def post(self,requset):
 		try:
 			data = json.loads(requset.body)
+			login_email = data['email']
+			login_password = data['password'].encode('utf-8')
 
-			if data['email'] =="" or data['password'] == "" :
+			if data['email'] == "" or data['password'] == "" :
 				return JsonResponse ({'MESSAGE': 'WRONG_REQUEST'},status = 400)	
+
+			db_email = User.objects.get(email=login_email)
+			db_password = db_email.password.encode('utf-8')
+
+			if not bcrypt.checkpw (login_password,db_password) :
+				return JsonResponse ({'MESSAGE':'WRONG_PASSWORD'},status = 401)
 
 			if not User.objects.filter(email=data['email']).exists():
 				return JsonResponse ({'MESSAGE':'INVALID_USER'}, status =401)
