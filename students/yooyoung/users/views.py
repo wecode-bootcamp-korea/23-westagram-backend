@@ -40,18 +40,18 @@ class SignIn(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
+
+            if not User.objects.filter(email=data['email']).exists():
+                return JsonResponse({"message": "INVALID_USER"}, status=401)
+
             user = User.objects.get(email=data['email'])
 
-            if (bcrypt.checkpw(data['password'].encode("UTF-8"), user.password.encode('utf-8'))):
+            if  bcrypt.checkpw(data['password'].encode("UTF-8"), user.password.encode('utf-8')):
                 token = jwt.encode({'user_id': user.id}, SECRET_KEY, algorithm='HS256')
-                token = token.decode('utf-8')
                 return JsonResponse({'token': token }, status = 200)
 
             if (data['email'] == '') or (data['password'] == ''):
                 return JsonResponse({"message": "KEY_ERROR"}, status=400)
-            
-            if not User.objects.filter(email=data['email']).exists():
-                return JsonResponse({"message": "INVALID_USER"}, status=401)
 
             if data['password'] != User.objects.get(email=data['email']).password:
                 return JsonResponse({"massage": "INVALID_USER"}, status=401)
