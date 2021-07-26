@@ -27,7 +27,7 @@ class UserView(View):
             User.objects.create(
                 name         = data["name"],
                 email        = data["email"],
-                password     = hashed_password,
+                password     = hashed_password.decode("utf-8"),
                 phone_number = data["phone_number"],
                 birth_date   = data["birth_date"]        
             )
@@ -40,7 +40,7 @@ class UserView(View):
 class LoginView(View):
     def post(sef, request):
         data = json.loads(request.body)
- 
+
         try:
             if data["email"] == "" or data["password"] == "":
                 return JsonResponse ({"message":"INVALID_USER"}, status = 401)
@@ -48,7 +48,9 @@ class LoginView(View):
             if not User.objects.filter(email = data["email"]).exists():
                 return JsonResponse({"message":"INVALID_USER"}, status = 401)
 
-            if User.objects.get(email = data["email"]).password != data["password"]:
+            user = User.objects.get(email = data["email"])
+            
+            if not bcrypt.checkpw(data["password"].encode("utf-8"), user.password.encode("utf-8")):
                 return JsonResponse({"message":"INVALID_USER"}, status = 401)
 
             return JsonResponse({"message":"SUCCESS"}, status = 200)
