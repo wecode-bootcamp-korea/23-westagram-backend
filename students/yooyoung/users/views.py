@@ -52,11 +52,13 @@ class SignIn(View):
 
             if (data['email'] == '') or (data['password'] == ''):
                 return JsonResponse({"message": "KEY_ERROR"}, status=400)
+            
+            hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
 
             if data['password'] != User.objects.get(email=data['email']).password:
                 return JsonResponse({"massage": "INVALID_USER"}, status=401)
 
-            if User.objects.filter(email=data['email']) and User.objects.filter(password=data['password']):
+            if User.objects.filter(email=data['email']) and User.objects.filter(password=hashed_password):
                 return JsonResponse({"message": "SUCCESS"}, status=200)
 
         except KeyError:
