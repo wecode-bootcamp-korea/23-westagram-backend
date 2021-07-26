@@ -1,4 +1,4 @@
-import json, re
+import json,  re, bcrypt
 
 from django.views   import View
 from django.http    import JsonResponse
@@ -25,7 +25,7 @@ class UserView(View):
             User.objects.create(
                 name          = data["name"],
                 email         = data["email"],
-                password      = data["password"],
+                password      = bcrypt.hashpw(data["password"].encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
                 phone_number  = data["phone_number"],
                 age           = data["age"]
             )
@@ -45,7 +45,7 @@ class UserLoginView(View):
             if not User.objects.filter(email = data["email"]).exists():
                 return JsonResponse({"message": "INVALID_USER"}, status=401)
 
-            if User.objects.get(email=data["email"]).password != data["password"]:
+            if not bcrypt.checkpw(data["password"].encode('utf-8'), User.objects.get(email = data["email"]).password.encode('utf-8')):
                 return JsonResponse({"message": "INVALID_USER"}, status=401)
 
             return JsonResponse({"message": "SUCCESS"}, status=200)
