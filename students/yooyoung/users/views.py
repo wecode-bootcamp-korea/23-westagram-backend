@@ -47,11 +47,14 @@ class SignIn(View):
 
             if not User.objects.filter(email=data['email']).exists():
                 return JsonResponse({"message": "INVALID_USER"}, status=401)
+            
+            user = User.objects.get(email=data['email'])
 
-            if not bcrypt.checkpw(data['password'].encode('UTF-8'), User.objects.get(email=data['email']).password.encode('UTF-8')):
+            if not bcrypt.checkpw(data['password'].encode('UTF-8'), user.password.encode('UTF-8')):
                 return JsonResponse({"massage": "INVALID_USER"}, status=401)
 
-            token = jwt.encode({'user_id': User.objects.get(email = data["email"]).id}, SECRET_KEY, algorithm='HS256')
+            token = jwt.encode({'user_id': user.id}, SECRET_KEY, algorithm='HS256')
+            
             return JsonResponse({'token': token}, status = 200)
 
         except KeyError:
