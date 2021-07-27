@@ -1,11 +1,13 @@
 import json
 import re
 import bcrypt
+import jwt
 
 from django.http  import JsonResponse
 from django.views import View
 
 from users.models import User
+from my_settings import SECRET_KEY
 
 # Create your views here.
 
@@ -51,13 +53,17 @@ class SigninView(View):
         if not User.objects.filter(email=data['email']).exists():
           return JsonResponse({'message':'INVALID_USER'}, status=401)
 
-        password = User.objects.get(email=data['email']).password
+        user = User.objects.get(email=data['email'])
+        
+        password = user.password
         
         if not bcrypt.checkpw(data['password'].encode('utf-8'), password.encode('utf-8')):
             return JsonResponse({'message':'INVALID_USER'}, status=401)
 
-        return JsonResponse({'message':'SUCCESS'}, status=200)
-      
+        access_token = jwt.encode({'id' : user.id}, SECRET_KEY, algorithm = 'HS256')
+
+        return JsonResponse({'token' : access_token}, status=200)
+
       except:
-        return JsonResponse({"message":"KEY_ERROR"}, status=400)
+        return JsonResponse({'message':'KEY_ERROR'}, status=400)
 
