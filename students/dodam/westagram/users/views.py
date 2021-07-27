@@ -1,17 +1,18 @@
-import json, re, bcrypt
+import json, re, bcrypt, jwt
 
-from django.views import View
-from django.http import JsonResponse
+from django.views 		import View
+from django.http 		import JsonResponse
 
-from users.models import User
+from users.models 		import User
+from westagram.settings import SECRET_KEY
 
 password_regular = re.compile("^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$")
 
 class UserView(View):
 	def post(self,request):
 		try:	
-			data = json.loads(request.body)  
-			bcrypt_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+			data=json.loads(request.body)  
+			bcrypt_password=bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 			if User.objects.filter(name=data['name']).exists() or User.objects.filter(email=data['email']).exists(): 			
 				return JsonResponse({'MESSAGE': 'DATA_OVERLAP'}, status = 400)		
@@ -34,8 +35,8 @@ class UserView(View):
 class LoginView(View):
 	def post(self,request):
 		try:
-			data = json.loads(request.body)
-
+			data=json.loads(request.body)
+			print (data)
 			if data['email'] == "" or data['password'] == "" :
 				return JsonResponse ({'MESSAGE': 'WRONG_REQUEST'},status = 400)	
 
@@ -47,7 +48,9 @@ class LoginView(View):
 
 			if not bcrypt.checkpw(data['password'].encode('utf-8'),password) :
 				return JsonResponse ({'MESSAGE':'WRONG_PASSWORD'},status = 401)
-			return JsonResponse ({'MESSAGE':'SUCCESS'}, status = 200)
+
+			access_token = jwt.encode({'id': user.id}, SECRET_KEY, algorithm='HS256')
+			return JsonResponse ({'access_token':'token','MESSAGE':'SUCCESS'}, status = 200)
 
 		except KeyError:
 			return JsonResponse ({'MESSAGE':'KEY_ERROR'},status = 400)	
