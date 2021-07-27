@@ -1,13 +1,13 @@
-from django.shortcuts import render
-import bcrypt
-
-
 import json
+import bcrypt
+import jwt
 
 from django.http  import JsonResponse 
 from django.views import View
 
-from .models	  import User
+from .models	        import User
+from westagram.settings import SECRET_KEY
+
 
 
 
@@ -41,7 +41,7 @@ class UserView(View):
                 password      = hashed_password,
                 email         = data['email']
             )
-            return JsonResponse({'MESSAGE' : 'SUCCESS'}, status=201)  #성공하면 석세스 메세지 날림.
+            return JsonResponse({'MESSAGE' : 'SUCCESS'}, status=201) 
         except KeyError:
             return JsonResponse({'MESSAGE' : 'KEY ERROR'}, status=400)
 
@@ -50,7 +50,7 @@ class SigninView(View):
         try:
             data     = json.loads(request.body)
             user     = User.objects.get(email=data['email'])
-            password=data['password']
+            password = data['password']
 
             if data['email']=="" or data['password']=="":
                 return JsonResponse({"MESSAGE":"NOT_FOUND"},status=404)
@@ -61,6 +61,7 @@ class SigninView(View):
             if not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
                 return JsonResponse({'MESSAGE':'INVALID_USER'}, status=401)
 
-            return JsonResponse({"MESSAGE":"SUCCESS"}, status=200)
+            access_token = jwt.encode({'id' : user.id}, SECRET_KEY, algorithm = 'HS256').decode()
+            return JsonResponse({'MESSAGE':'SUCCESS', 'TOKEN': access_token },status=200)
         except KeyError:
-          return JsonResponse({"MESSAGE" : "KEY_ERROR"}, status=400)
+            return JsonResponse({"MESSAGE" : "KEY_ERROR"}, status=400)
