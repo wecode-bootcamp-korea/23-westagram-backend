@@ -43,7 +43,6 @@ class SignInView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
-            user = User.objects.get(email = data['email'])
 
             if data['email']=="" or data['password']=="":
                 return JsonResponse({"MESSAGE":"NO_INPUT_DATA"}, status=400)
@@ -51,6 +50,8 @@ class SignInView(View):
             if not User.objects.filter(email = data['email']).exists():
                 return JsonResponse({"MESSAGE":"INVALID_USER"}, status=401)
 
+            user = User.objects.get(email = data['email'])
+            
             if not bcrypt.checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')):
                 return JsonResponse({"MESSAGE":"INVALID_USER"}, status=401)
 
