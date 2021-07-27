@@ -1,9 +1,10 @@
-import json, re, bcrypt
+import json, re, bcrypt, jwt
 
 from django.http  import JsonResponse
 from django.views import View
 
 from users.models import User
+from my_settings  import SECRET_KEY
 
 def email_validation(email):
     p = re.compile('^[a-zA-Z0-9-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-_]+\.*[a-zA-Z0-9-_]+$')
@@ -62,8 +63,10 @@ class LoginView(View):
             
             if not check_password:
                 return JsonResponse({"MESSAGE":"INVALID_USER"}, status=401)
+
+            access_token = jwt.encode({'id':user.id}, SECRET_KEY, algorithm='HS256')
             
-            return JsonResponse({"MESSAGE":"SUCCESS"}, status=200) 
+            return JsonResponse({"token":access_token}, status=200) 
         except KeyError:
             return JsonResponse({"MESSAGE":"KEY_ERROR"},status=400)
 
