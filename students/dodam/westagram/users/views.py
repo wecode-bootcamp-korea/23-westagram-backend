@@ -1,4 +1,4 @@
-import json, re, jwt, bcrypt
+import json, re, bcrypt
 
 from django.views import View
 from django.http import JsonResponse
@@ -20,11 +20,11 @@ class UserView(View):
 				return JsonResponse ({'MESSAGE': 'INVALID_FORMAT'}, status = 400)
 
 			User.objects.create(
-			name 		 = data['name'],
-			email	 	 = data['email'],
-			password	 = bcrypt_password,
-			phone_number = data['phone_number'], 
-			birthday 	 = data['birthday'],
+				name 		 = data['name'],
+				email	 	 = data['email'],
+				password	 = bcrypt_password,
+				phone_number = data['phone_number'], 
+				birthday 	 = data['birthday'],
 			)
 			return JsonResponse ({'MESSAGE':'SUCCESS'}, status = 201)
 
@@ -32,26 +32,21 @@ class UserView(View):
 			return JsonResponse ({'MESSAGE':'KEY_ERROR'}, status = 400)
 
 class LoginView(View):
-	def post(self,requset):
+	def post(self,request):
 		try:
-			data = json.loads(requset.body)
-			login_email = data['email']
-			login_password = data['password'].encode('utf-8')
+			data = json.loads(request.body)
 
 			if data['email'] == "" or data['password'] == "" :
 				return JsonResponse ({'MESSAGE': 'WRONG_REQUEST'},status = 400)	
 
-			db_email = User.objects.get(email=login_email)
-			db_password = db_email.password.encode('utf-8')
-
-			if not bcrypt.checkpw (login_password,db_password) :
-				return JsonResponse ({'MESSAGE':'WRONG_PASSWORD'},status = 401)
-
 			if not User.objects.filter(email=data['email']).exists():
 				return JsonResponse ({'MESSAGE':'INVALID_USER'}, status =401)
 
-			if data['password'] != User.objects.get(password=data['password']).password:
-				return JsonResponse ({'MESSAGE':'INVALID_USER'}, status =401)
+			user	 = User.objects.get(email=data['email'])
+			password = user.password.encode('utf-8')
+
+			if not bcrypt.checkpw(data['password'].encode('utf-8'),password) :
+				return JsonResponse ({'MESSAGE':'WRONG_PASSWORD'},status = 401)
 			return JsonResponse ({'MESSAGE':'SUCCESS'}, status = 200)
 
 		except KeyError:
