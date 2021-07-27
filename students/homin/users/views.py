@@ -1,5 +1,6 @@
 import json
 import re
+import bcrypt
 
 from django.views import View
 from django.http  import JsonResponse
@@ -14,8 +15,7 @@ class UserView(View):
             if not re.match('^\w+@\w+\.\w+$', data['email']):
                 return JsonResponse({"message": 'INVALID_EMAIL_FORMAT'}, status=400)
 
-            if (not re.match('\S{1,8}', data['password']) or
-                    len(data['password']) < 8):
+            if (not re.match('\S{1,8}', data['password']) or len(data['password']) < 8):
                 return JsonResponse({"message": 'INVALID_PASSWORD_FORMAT'}, status=400)
 
             if not re.match('\d{3}-\d{3,4}-\d{4}', data['phone_number']):
@@ -27,7 +27,7 @@ class UserView(View):
             User.objects.create(
                 name         = data['name'],
                 email        = data['email'],
-                password     = data['password'],
+                password     = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
                 phone_number = data['phone_number']
             )
             return JsonResponse({"message": "SUCCESS"}, status=201)
@@ -43,11 +43,11 @@ class SigninView(View):
         try:
             data = json.loads(request.body)
 
-            if not User.objects.get(email.data['email']).exists():
+            if not User.objects.filter(email=data['email']).exists():
                 return jsonresponse({"message": "INVALID_USER"}, status=401)
 
-            if  data['password'] != User.objects.get(email.data['email']).password:
-                return jsonresponse({"message": "INVALID_USER"}, status=401)
+            if not bcrypt.checkpw(data['password'].encode('utf-8'), User.objects.get(email=data['email']).password.encode('utf-8')):
+                return JsonResponse({"message": "INVALID_USER"}, status=401)
 
             return JsonResponse({"message": "SUCCESS"}, status=200)
         except KeyError:
