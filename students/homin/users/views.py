@@ -52,6 +52,6 @@ class SigninView(View):
                 return JsonResponse({"message": "INVALID_USER"}, status=401)
             
             token = jwt.encode({'id': User.objects.get(email=data['email']).id}, SECRET_KEY, algorithm='HS256')
-            return JsonResponse({"message": "SUCCESS", "header": jwt.decode(token, SECRET_KEY, algorithms='HS256')}, status=200)
+            return JsonResponse({"token": token}, status=200)
         except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
