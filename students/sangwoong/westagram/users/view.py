@@ -48,21 +48,18 @@ class UserView(View):
 class SigninView(View):
     def post(self, request):
         try:
-            data = json.loads(request.body)
+            data     = json.loads(request.body)
+            user     = User.objects.get(email=data['email'])
             password=data['password']
-            user=User.objects.get(email=data['email'])
 
             if data['email']=="" or data['password']=="":
                 return JsonResponse({"MESSAGE":"NOT_FOUND"},status=404)
             
             if not User.objects.filter(email=data['email']).exists():
                 return JsonResponse({"MESSAGE" : "INVALID_USER"}, status=401)
-                
-#            if User.objects.get(email=data['email']).password !=data['password']:
-#                return JsonResponse({"MESSAGE" : "INVALID_USER"}, status=401)
             
             if not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
-                return JsonResponse({'MESSAGE':'INVALID_USER_bcrypt'}, status=401)
+                return JsonResponse({'MESSAGE':'INVALID_USER'}, status=401)
 
             return JsonResponse({"MESSAGE":"SUCCESS"}, status=200)
         except KeyError:
