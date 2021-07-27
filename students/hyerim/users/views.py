@@ -2,7 +2,7 @@ import json
 import re
 import bcrypt
 
-from django.http import JsonResponse
+from django.http  import JsonResponse
 from django.views import View
 
 from users.models import User
@@ -51,14 +51,10 @@ class SigninView(View):
         if not User.objects.filter(email=data['email']).exists():
           return JsonResponse({'message':'INVALID_USER'}, status=401)
 
-        user_info = User.objects.get(email=data['email'])
-
-        input_pw = data['password']
-
-        user_pw = user_info.password
-
-        if not bcrypt.checkpw(input_pw.encode('utf-8'), user_pw.encode('utf-8')):
-          return JsonResponse({'message':'INVALID_USER'}, status=401) 
+        password = User.objects.get(email=data['email']).password
+        
+        if not bcrypt.checkpw(data['password'].encode('utf-8'), password.encode('utf-8')):
+            return JsonResponse({'message':'INVALID_USER'}, status=401)
 
         return JsonResponse({'message':'SUCCESS'}, status=200)
       
