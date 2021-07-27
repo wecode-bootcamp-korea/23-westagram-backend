@@ -51,9 +51,8 @@ class SignIn(View):
             if not bcrypt.checkpw(data['password'].encode('UTF-8'), User.objects.get(email=data['email']).password.encode('UTF-8')):
                 return JsonResponse({"massage": "INVALID_USER"}, status=401)
 
-            if  bcrypt.checkpw(data['password'].encode('UTF-8'), User.objects.get(email=data['email']).password.encode('UTF-8')):
-                token = jwt.encode({'user_id': User.objects.get(email = data["email"]).id}, SECRET_KEY, algorithm='HS256')
-                return JsonResponse({'token': token }, status = 200)
+            token = jwt.encode({'user_id': User.objects.get(email = data["email"]).id}, SECRET_KEY, algorithm='HS256')
+            return JsonResponse({'token': token}, status = 200)
 
         except KeyError:
             return JsonResponse({"massage": "KEY_ERROR"}, status=400)
