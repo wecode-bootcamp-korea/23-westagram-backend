@@ -36,7 +36,7 @@ class LoginView(View):
 	def post(self,request):
 		try:
 			data=json.loads(request.body)
-			print (data)
+			
 			if data['email'] == "" or data['password'] == "" :
 				return JsonResponse ({'MESSAGE': 'WRONG_REQUEST'},status = 400)	
 
