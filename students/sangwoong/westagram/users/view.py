@@ -36,9 +36,9 @@ class UserView(View):
 
               
             User.objects.create(
-                name         = data['name'],
-                phone_number = data['phone_number'],
-                password     = hashed_password,
+                name          = data['name'],
+                phone_number  = data['phone_number'],
+                password      = hashed_password,
                 email         = data['email']
             )
             return JsonResponse({'MESSAGE' : 'SUCCESS'}, status=201)  #성공하면 석세스 메세지 날림.
