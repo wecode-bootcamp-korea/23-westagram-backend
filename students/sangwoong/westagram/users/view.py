@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from jwt import algorithms
 import bcrypt
 import jwt
 from westagram.settings import SECRET_KEY
@@ -65,6 +66,6 @@ class SigninView(View):
 
             access_token = jwt.encode({'id' : user.id}, SECRET_KEY, algorithm = 'HS256')
 
-            return JsonResponse({'MESSAGE':'SUCCESS', 'ACCESS_TOKEN':access_token}, status=200)
+            return JsonResponse({'MESSAGE':'SUCCESS', 'TOKEN':jwt.decode(access_token,SECRET_KEY,algorithm = 'HS256')}, status=200)
         except KeyError:
             return JsonResponse({"MESSAGE" : "KEY_ERROR"}, status=400)
