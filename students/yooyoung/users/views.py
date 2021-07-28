@@ -25,11 +25,11 @@ class SignUp(View):
                 return JsonResponse({"message": "INVALID_FORMAT"}, status=400)
 
             User.objects.create(
-                name         =   data['name'],
+                # name         =   data['name'],
                 email        =   data['email'],
                 password     =   hashed_password.decode('UTF-8'),
-                phone_number =   data['phone'],
-                age          =   data['age']
+                # phone_number =   data['phone'],
+                # age          =   data['age']
             )
 
             return JsonResponse({"Message": "SUCCESS"}, status=201)
