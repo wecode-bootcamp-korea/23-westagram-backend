@@ -8,7 +8,7 @@ from westagram.settings  import SECRET_KEY
 
 class SignUp(View):
     def post(self, request):
-        try:
+        # try:
             data = json.loads(request.body)
             hashed_password = bcrypt.hashpw(data['password'].encode('UTF-8'), bcrypt.gensalt())
 
@@ -25,17 +25,17 @@ class SignUp(View):
                 return JsonResponse({"message": "INVALID_FORMAT"}, status=400)
 
             User.objects.create(
-                # name         =   data['name'],
+                name         =   data['name'],
                 email        =   data['email'],
                 password     =   hashed_password.decode('UTF-8'),
-                # phone_number =   data['phone'],
-                # age          =   data['age']
+                phone_number =   data['phone_number'],
+                age          =   data['age']
             )
 
             return JsonResponse({"Message": "SUCCESS"}, status=201)
         
-        except KeyError:
-            return JsonResponse({"message": "KEY_ERROR"}, status=400)
+        # except KeyError:
+        #     return JsonResponse({"message": "KEY_ERROR"}, status=400)
 
 class SignIn(View):
     def post(self, request):
