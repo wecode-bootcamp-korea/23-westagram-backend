@@ -2,8 +2,8 @@ import json
 import re
 import bcrypt, jwt
 
-from django.http 		import JsonResponse
-from django.views 		import View
+from django.http 	import JsonResponse
+from django.views 	import View
 
 from users.models import User
 from my_settings  import SECRET_KEY
